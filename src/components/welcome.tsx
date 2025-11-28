@@ -6,7 +6,17 @@ import {motion} from 'motion/react';
 function Welcome() {
   return (
     <div className='flex flex-col items-center justify-center min-h-screen text-center p-6'>
-        <motion.div>hello</motion.div>
+        <motion.div 
+        initial={{opacity:0, y:-30
+
+        }}
+        animate={{opacity:1, y:0
+
+        }}
+        transition={{duration:2}}
+        >
+          <h1 className='text-4xl md:text-5xl font-extrabold text-green-700'>Grocery App</h1>
+          </motion.div>
     </div>
   )
 }
