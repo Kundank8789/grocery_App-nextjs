@@ -1,10 +1,13 @@
 import { auth } from '@/auth';
+import AdminDashboard from '@/components/AdminDashboard';
+import DeleveryBoy from '@/components/DeleveryBoy';
 import EditRoleMobile from '@/components/EditRoleMobile';
 import Nav from '@/components/Nav';
+import UserDashboard from '@/components/UserDashboard';
 import connectdb from '@/lib/db'
 import User from '@/models/user.model';
 import { redirect } from 'next/navigation';
-import React from 'react'
+import React, { use } from 'react'
 
 async function Home() {
   await connectdb();
@@ -22,6 +25,11 @@ async function Home() {
     return (
       <>
         <Nav user={plainUser}/>
+        {user.role=="user"?(
+          <UserDashboard/>
+        ):user.role=="admin"?(
+           <AdminDashboard/>
+        ):<DeleveryBoy/>}
       </>
     )
   }
