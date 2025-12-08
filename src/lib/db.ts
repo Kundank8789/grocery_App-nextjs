@@ -1,31 +1,40 @@
 import mongoose from "mongoose";
 
+const MONGODB_URI = process.env.MONGODB_URI;
 
-const mongodbUri = process.env.MONGODB_URI || "";
-
-if (!mongodbUri) {
-    throw new Error("db error")
+if (!MONGODB_URI) {
+  throw new Error("Please define MONGODB_URI in .env");
 }
 
-let cached=global.mongoose;
-if(!cached){
-    cached=global.mongoose={conn:null,promise:null};
+declare global {
+  // allow global var for mongoose cache
+  // eslint-disable-next-line no-var
+  var _mongoose: { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null };
 }
 
-const connectdb=async()=>{
-    if(cached.conn){
-        return cached.conn;
-    }
-
-    if(!cached.promise){
-        cached.promise=mongoose.connect(mongodbUri).then((conn)=>conn.connection);
-    
-    }
-    try {
-        const conn=await cached.promise;
-        return conn;
-    } catch (error) {
-        console.log(error);
-    }
+if (!global._mongoose) {
+  global._mongoose = { conn: null, promise: null };
 }
-export default connectdb;
+
+export default async function connectdb() {
+  if (global._mongoose.conn) {
+    return global._mongoose.conn;
+  }
+
+  if (!global._mongoose.promise) {
+    global._mongoose.promise = mongoose
+      .connect(MONGODB_URI, {
+        // optional configs
+      })
+      .then((mongooseInstance) => mongooseInstance);
+  }
+
+  try {
+    global._mongoose.conn = await global._mongoose.promise;
+  } catch (err) {
+    console.error("❌ MongoDB Connection Error:", err);
+    throw err; // do NOT swallow errors
+  }
+
+  return global._mongoose.conn;
+}
