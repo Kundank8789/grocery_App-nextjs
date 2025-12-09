@@ -7,7 +7,7 @@ import UserDashboard from '@/components/UserDashboard';
 import connectdb from '@/lib/db'
 import User from '@/models/user.model';
 import { redirect } from 'next/navigation';
-import React, { use } from 'react'
+import React, { user } from 'react'
 
 async function Home() {
   await connectdb();
