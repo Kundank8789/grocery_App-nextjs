@@ -1,9 +1,11 @@
 import { auth } from "@/auth";
+import connectdb from "@/lib/db";
 import User from "@/models/user.model";
 import { NextResponse } from "next/server"
 
-export async function GET(req: NextResponse) {
+export async function GET() {
     try {
+        await connectdb();
         const session = await auth();
         if (!session || !session.user) {
             return NextResponse.json(
