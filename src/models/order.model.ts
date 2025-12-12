@@ -1,79 +1,84 @@
 import mongoose from "mongoose";
 
-interface IOrder{
-    _id?:mongoose.Types.ObjectId;
+interface IOrder {
+    _id?: mongoose.Types.ObjectId;
     userId: mongoose.Types.ObjectId;
-    items:[
+    items: [
         {
-            grocery:mongoose.Types.ObjectId,
-            name:string,
-            price:string,
-            unit:string,
-            image:string,
-            quantity:number
+            grocery: mongoose.Types.ObjectId,
+            name: string,
+            price: string,
+            unit: string,
+            image: string,
+            quantity: number
         }
     ]
-    totalAmount:number,
-    paymentMethod:"cod" | "online",
-    address:{
-        fullName:string,
-        mobile:string,
-        city:string,
-        state:string,
-        pincode:string,
-        fullAddress:string,
-        latitude:number,
-        longitude:number
+    ,
+    isPaid?: boolean,
+    totalAmount: number,
+    paymentMethod: "cod" | "online",
+    address: {
+        fullName: string,
+        mobile: string,
+        city: string,
+        state: string,
+        pincode: string,
+        fullAddress: string,
+        latitude: number,
+        longitude: number
     }
-    status:"pending" | "out of delivery" | "delivered",
-    createdAt?:Date,
-    updatedAt?:Date
+    status: "pending" | "out of delivery" | "delivered",
+    createdAt?: Date,
+    updatedAt?: Date
 }
 
 const orderSchema = new mongoose.Schema<IOrder>({
-    user:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User",
-        required:true
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     },
-    items:[
+    items: [
         {
-            grocery:{
-                type:mongoose.Schema.Types.ObjectId,
-                ref:"Grocery",
-                required:true
+            grocery: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Grocery",
+                required: true
             },
-            name:String,
-            price:String,
-            unit:String,
-            image:String,
-            quantity:Number
+            name: String,
+            price: String,
+            unit: String,
+            image: String,
+            quantity: Number
 
         }
     ],
-    paymentMethod:{
-        type:String,
-        enum:["cod","online"],
-        default:"cod"
+    paymentMethod: {
+        type: String,
+        enum: ["cod", "online"],
+        default: "cod"
     },
-    totalAmount:Number,
-    address:{
-        fullName:String,
-        mobile:String,
-        city:String,
-        state:String,
-        pincode:String,
-        fullAddress:String,
-        latitude:Number,
-        longitude:Number
+    isPaid: {
+        type: Boolean,
     },
-    status:{
-        type:String,
-        enum:["pending","out of delivery","delivered"],
-        default:"pending"
+    totalAmount: Number,
+    address: {
+        fullName: String,
+        mobile: String,
+        city: String,
+        state: String,
+        pincode: String,
+        fullAddress: String,
+        latitude: Number,
+        longitude: Number
+    },
+    status: {
+        type: String,
+        enum: ["pending", "out of delivery", "delivered"],
+        default: "pending"
     }
 })
 
-const Order = mongoose.models.Order || mongoose.model("Order",orderSchema)
+const Order = mongoose.models.Order || mongoose.model("Order", orderSchema)
 
 export default Order
