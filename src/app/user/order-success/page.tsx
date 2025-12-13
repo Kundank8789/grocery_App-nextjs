@@ -4,6 +4,7 @@ import { motion } from 'motion/react'
 import { ArrowRight, CheckCircle, Package } from 'lucide-react'
 import Link from 'next/link'
 
+
 function OrderSuccess() {
     return (
         <div className='flex flex-col items-center justify-center min-h-[80vh] px-6 text-center bg-linear-to-b from-green-50 to-white'>
@@ -60,7 +61,7 @@ function OrderSuccess() {
                 transition={{ delay: 1.2, duration: 0.4 }}
                 className='mt-12'
             >
-                <Link href={"/user/my-orders"} />
+                <Link href={"/user/my-orders"} >
                 <motion.div
                     whileHover={{ scale: 1.04 }}
                     whileTap={{ scale: 0.93 }}
@@ -68,7 +69,9 @@ function OrderSuccess() {
                 >
                     Go to My Orders <ArrowRight />
                 </motion.div>
+                </Link>
             </motion.div>
+
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: [0.2, 0.6, 0.2] }}
