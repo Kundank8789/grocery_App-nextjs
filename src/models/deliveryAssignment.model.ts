@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-interface IDeliveryAssignment{
+export interface IDeliveryAssignment{
     _id?: mongoose.Types.ObjectId
     orders: mongoose.Types.ObjectId
     brodcastTo: mongoose.Types.ObjectId[]
