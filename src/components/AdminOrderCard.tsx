@@ -1,16 +1,52 @@
 'use client'
-import { IOrder } from '@/models/order.model'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
-import { ChevronDown, ChevronUp, CreditCard, MapPin, Package, Phone, Truck, User } from 'lucide-react'
+import { ChevronDown, ChevronUp, CreditCard, MapPin, Package, Phone, Truck, User, UserCheck } from 'lucide-react'
 import Image from 'next/image'
 import axios from 'axios'
 
+import mongoose from 'mongoose'
+import { IUser } from '@/models/user.model'
+
+
+interface IOrder {
+    _id?: mongoose.Types.ObjectId;
+    userId: mongoose.Types.ObjectId;
+    items: [
+        {
+            grocery: mongoose.Types.ObjectId,
+            name: string,
+            price: string,
+            unit: string,
+            image: string,
+            quantity: number
+        }
+    ]
+    ,
+    isPaid?: boolean,
+    totalAmount: number,
+    paymentMethod: "cod" | "online",
+    address: {
+        fullName: string,
+        mobile: string,
+        city: string,
+        state: string,
+        pincode: string,
+        fullAddress: string,
+        latitude: number,
+        longitude: number
+    }
+    assignment?: mongoose.Types.ObjectId
+    assignedDeliveryBoy?: IUser
+    status: "pending" | "out of delivery" | "delivered",
+    createdAt?: Date,
+    updatedAt?: Date
+}
 
 function AdminOrderCard({ order }: { order: IOrder }) {
 
     const statusOptions = ["pending", "out of delivery"]
-    const [status, setStatus] =useState<string>(order.status)
+    const [status, setStatus] =useState<string>("pending")
     const [expand, setExpand]=useState(false)
     const updateStatus = async (orderId: string, status: string) => {
         try {
@@ -21,6 +57,12 @@ function AdminOrderCard({ order }: { order: IOrder }) {
             console.log(error)
         }
     }
+
+    useEffect(()=>{
+        setStatus(order.status)
+    },[order])
+
+
     return (
         <motion.div
             key={order._id?.toString()}
@@ -63,6 +105,19 @@ function AdminOrderCard({ order }: { order: IOrder }) {
                         <CreditCard size={16} className='text-green-600' />
                         <span>{order.paymentMethod === "cod" ? "cash on delivery" : "online payment"}</span>
                     </p>
+
+                    {order.assignedDeliveryBoy && <div className='mt-4 bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center justify-between'>
+                        <div className='flex items-center gap-3 text-sm text-gray-700'>
+                            <UserCheck className="text-blue-600" size={18}/>
+                            <div className='font-semibold text-gray-800'>
+                                <p>Assigned to:<span>{order.assignedDeliveryBoy.name}</span></p>
+                                <p className='text-xs text-gray-600'>📞 +91 {order.assignedDeliveryBoy.mobile}</p>
+                            </div>
+                        </div>
+                        <a href={`tel:${order.assignedDeliveryBoy.mobile}`} className='bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg hover:bg-blue-700 transition'>Call</a>
+                        </div>}
+
+
                 </div>
 
                 <div className='flex flex-col items-start md:items-end gap-2'>

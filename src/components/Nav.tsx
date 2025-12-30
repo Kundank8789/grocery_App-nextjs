@@ -64,7 +64,7 @@ function Nav({ user }: { user: IUser }) {
                       bg-white/10 hover:bg-white/20 hover:pl-4 transition-all '><PlusCircle className='w-5 h-5' />Add Grocery</Link>
                         <Link href={""} className='flex items-center gap-3 p-3 rounded-lg
                       bg-white/10 hover:bg-white/20 hover:pl-4 transition-all '><Boxes />View Grocery</Link>
-                        <Link href={""} className='flex items-center gap-3 p-3 rounded-lg
+                        <Link href={"/admin/manage-orders"} className='flex items-center gap-3 p-3 rounded-lg
                       bg-white/10 hover:bg-white/20 hover:pl-4 transition-all '><ClipboardCheck />Manage Grocery</Link>
                 </div>
                 <div className='my-5 border-t border-white/20'></div>
