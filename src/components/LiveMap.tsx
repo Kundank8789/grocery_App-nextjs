@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 interface ILocation {
     latitude:number
@@ -9,8 +9,21 @@ interface IProp{
     deliveryBoyLocation:ILocation
 }
 import L from 'leaflet';
-import { MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet'
+import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css';
+
+function Recenter({position}:{position:[number,number]}){
+    const map =useMap()
+    useEffect(()=>{
+        if(position[0]!==0 && position[1]!==0){
+            map.setView(position,map.getZoom(),{
+                animate:true
+            })
+        }
+    },[position,map])
+    return null
+}
+
 function LiveMap({userLocation,deliveryBoyLocation}:IProp) {
     const deliveryBoyIcon=L.icon({
         iconUrl:"https://cdn-icons-png.flaticon.com/128/9561/9561839.png",
@@ -29,7 +42,8 @@ function LiveMap({userLocation,deliveryBoyLocation}:IProp) {
 
   return (
     <div className='w-full h-[500px] rounded-xl overflow-hidden shadow relative'>
-        <MapContainer center={center as LatLngExpression} zoom={13} scrollWheelZoom={true} className='w-full h-full'>
+        <MapContainer center={center as L.LatLngExpression} zoom={13} scrollWheelZoom={true} className='w-full h-full'>
+            <Recenter position={center as [number,number]}/>
                                         <TileLayer
                                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
