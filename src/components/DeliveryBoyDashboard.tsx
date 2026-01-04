@@ -134,6 +134,7 @@ function DeliveryBoyDashboard() {
             console.log(result.data)
             setActiveOrder(null)
             setVerifyOtpLoading(false)
+            await fetchCurrentOrders()
         } catch (error) {
         setOtpError("otp verification Error")
             console.log(error)
@@ -155,16 +156,17 @@ function DeliveryBoyDashboard() {
                         {!activeOrder.order. deliveryOtpVerification && !showOtpBox && (
                              <button
                              onClick={sendOtp}
-                              className='w-full bg-green-600 text-white rounded-lg'>{sendOtpLoading?<Loader size={16} className='animate-spin text-white'/>:"Mark as Delivered"}</button>
+                              className='w-full bg-green-600 text-white rounded-lg'>{sendOtpLoading?<Loader size={16} className='animate-spin text-white text-c'/>:"Mark as Delivered"}</button>
                   
                         )}
                         {showOtpBox &&
                         <div className='mt-4'>
                             <input type="text" className='w-full py-3 border roundedd-lg text-center' placeholder='Enter Otp' maxLength={4} onChange={(e)=>setOtp(e.target.value)} value={otp}/>
-                            <button className='w-full mt-4 bg-blue-600 text-white py-3 rounded-lg' onClick={verifyOtp}>Verify Otp</button>
+                            <button className='w-full mt-4 bg-blue-600 text-white py-3 rounded-lg' onClick={verifyOtp}>{verifyOtpLoading?<Loader size={16} className='animate-spin text-white text-center'/>:"Verify Otp"}</button>
                             {otpError && <div className='text-red-600 mt-2'>{otpError}</div>}
                             </div>
                             }
+                            {activeOrder.order.deliveryOtpVerification && <div className='text-green-700 text-center font-bold'>Delivery Completed</div>}
                           </div>
                        
 
