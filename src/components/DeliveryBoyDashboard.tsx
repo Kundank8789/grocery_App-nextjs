@@ -6,6 +6,8 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import LiveMap from './LiveMap'
 import DeliveryChart from './DeliveryChart'
+import { divIcon } from 'leaflet'
+import { Loader } from 'lucide-react'
 
 interface ILocation {
     latitude: number
@@ -16,6 +18,11 @@ function DeliveryBoyDashboard() {
     const [assignments, setAssignments] = useState<any[]>([])
     const { userData } = useSelector((state: RootState) => state.user)
     const [activeOrder, setActiveOrder] = useState<any>(null)
+    const [showOtpBox, setShowOtpBox] = useState(false)
+    const [otpError, setOtpError]=useState("")
+    const [sendOtpLoading, setSendOtpLoading]=useState(false)
+    const [verifyOtpLoading, setVerifyOtpLoading]=useState(false)
+    const [otp, setOtp]=useState("")
     const [userLocation, setUserLocation] = useState<ILocation>({
         latitude: 0,
         longitude: 0
@@ -91,22 +98,48 @@ function DeliveryBoyDashboard() {
         }
     }
 
-    useEffect((): any=>{
-const socket=getSocket()
-socket.on("update-deliveryBoy-location",({userId,location})=>{
-    setDeliveryBoyLocation({
-        latitude:location.coordinates[1],
-        longitude:location.coordinates[0]
-    })
-})
-return ()=>socket.off("update-deliveryBoy-location")
-    },[])
+    useEffect((): any => {
+        const socket = getSocket()
+        socket.on("update-deliveryBoy-location", ({ userId, location }) => {
+            setDeliveryBoyLocation({
+                latitude: location.coordinates[1],
+                longitude: location.coordinates[0]
+            })
+        })
+        return () => socket.off("update-deliveryBoy-location")
+    }, [])
 
     useEffect(() => {
         fetchCurrentOrders()
         fetchAssignments()
     }, [userData])
 
+    const sendOtp = async () => {
+        setSendOtpLoading(true)
+        try {
+            const result = await axios.post("/api/delivery/otp/send", { orderId: activeOrder.order._id })
+            console.log(result.data)
+            setShowOtpBox(true)
+            setSendOtpLoading(false)
+        } catch (error) {
+            console.log(error)
+            setSendOtpLoading(false)
+        }
+    }
+
+    const verifyOtp=async()=>{
+        setVerifyOtpLoading(true)
+           try {
+            const result = await axios.post("/api/delivery/otp/verify", { orderId: activeOrder.order._id, otp })
+            console.log(result.data)
+            setActiveOrder(null)
+            setVerifyOtpLoading(false)
+        } catch (error) {
+        setOtpError("otp verification Error")
+            console.log(error)
+            setVerifyOtpLoading(false)
+        }
+    }
     if (activeOrder && userLocation && userData?._id) {
         return (
             <div className='p-4 pt-[120px] min-h-screen bg-gray-50'>
@@ -117,7 +150,28 @@ return ()=>socket.off("update-deliveryBoy-location")
                         <LiveMap userLocation={userLocation} deliveryBoyLocation={deliveryBoyLocation} />
                     </div>
                     <DeliveryChart orderId={activeOrder.order._id} deliveryBoyId={userData?._id} />
+
+                    <div className='mt-6 bg-white rounded-xl border shadow p-6'>
+                        {!activeOrder.order. deliveryOtpVerification && !showOtpBox && (
+                             <button
+                             onClick={sendOtp}
+                              className='w-full bg-green-600 text-white rounded-lg'>{sendOtpLoading?<Loader size={16} className='animate-spin text-white'/>:"Mark as Delivered"}</button>
+                  
+                        )}
+                        {showOtpBox &&
+                        <div className='mt-4'>
+                            <input type="text" className='w-full py-3 border roundedd-lg text-center' placeholder='Enter Otp' maxLength={4} onChange={(e)=>setOtp(e.target.value)} value={otp}/>
+                            <button className='w-full mt-4 bg-blue-600 text-white py-3 rounded-lg' onClick={verifyOtp}>Verify Otp</button>
+                            {otpError && <div className='text-red-600 mt-2'>{otpError}</div>}
+                            </div>
+                            }
+                          </div>
+                       
+
                 </div>
+
+
+
             </div>
         )
     }

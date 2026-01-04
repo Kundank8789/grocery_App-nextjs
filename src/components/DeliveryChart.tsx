@@ -1,3 +1,4 @@
+'use client'
 import { getSocket } from '@/lib/socket'
 import { Loader, Send, Sparkle } from 'lucide-react'
 import mongoose from 'mongoose'
